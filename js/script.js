@@ -1,4 +1,5 @@
 // Element Selectors:
+const form = document.querySelector("form");
 const nameInput = document.querySelector("#name");
 const jobRoleSelect = document.querySelector("#title");
 const otherJobRole = document.querySelector("#other-job-role");
@@ -97,5 +98,55 @@ paymentSelect.addEventListener("change", (e) => {
         creditCardSection.hidden = false;
         paypalSection.hidden = true;
         bitcoinSection.hidden = true;
+    }
+});
+
+// Event listener for form submissions
+form.addEventListener("submit", (e) => {
+    // e.preventDefault();
+    console.log("submission running...");
+
+    // -> Validate each form field
+    // ---> Name validation
+    const nameValue = document.querySelector("#name").value;
+    const nameRegex = /^[^\d ]+$/; // match if string has at least 1 non digit character.
+    if (!nameRegex.test(nameValue)) {
+        e.preventDefault();
+    }
+    // ---> Email validation
+    const emailValue = document.querySelector("#email").value;
+    const emailRegex = /^[^@]+@[^@.]+\.[a-z]+$/i;
+    if (!emailRegex.test(emailValue)) {
+        e.preventDefault();
+    }
+    // ---> Activities at least 1 selected (totalPrice must be more than 0)
+    if (totalPrice === 0) {
+        e.preventDefault();
+    }
+    // ---> Credit card (see info)
+    if (creditCardSection.hidden === false) {
+        console.log("credit card infos needed...");
+
+        // e.preventDefault();
+
+        // Validate credit card infos:
+        // -> card number
+        const creditCardValue = document.querySelector("#cc-num").value;
+        const cardNumberRegex = /^[\d]{13,16}$/;
+        if (!cardNumberRegex.test(creditCardValue)) {
+            e.preventDefault();
+        }
+        // -> zip code
+        const zipCodeValue = document.querySelector("#zip").value;
+        const zipCodeRegex = /^[\d]{5}$/;
+        if (!zipCodeRegex.test(zipCodeValue)) {
+            e.preventDefault();
+        }
+        // -> cvv code
+        const cvvCodeValue = document.querySelector("#cvv").value;
+        const cvvCodeRegex = /^[\d]{3}$/;
+        if (!cvvCodeRegex.test(cvvCodeValue)) {
+            e.preventDefault();
+        }
     }
 });
