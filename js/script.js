@@ -4,6 +4,9 @@ const jobRoleSelect = document.querySelector("#title");
 const otherJobRole = document.querySelector("#other-job-role");
 const designSelect = document.querySelector("#design");
 const colorSelect = document.querySelector("#color");
+const activitiesSection = document.querySelector("#activities");
+
+let totalPrice = 0; // of all registered activities
 
 // When page loads name input has focus:
 nameInput.focus();
@@ -48,5 +51,22 @@ designSelect.addEventListener("change", (e) => {
             colorOptions[i].hidden = false;
             colorSelect.value = colorOptions[i].value; // preselects in every loop -> not ideal solution but temporarily ok
         }
+    }
+});
+
+// Event listener for 'Register for Activities'
+activitiesSection.addEventListener("change", (e) => {
+    // Get cost of the target activity
+    const activityCost = parseInt(e.target.getAttribute("data-cost"));
+    // If an activity is checked, add its cost to totalPrice
+    if (e.target.checked) {
+        totalPrice += activityCost;
+        // Update the totalText
+        document.querySelector("#activities-cost").textContent = "Total: $" + totalPrice;
+    } else {
+        // if it is not checked, subtract its cost from totalPrice
+        totalPrice -= activityCost;
+        // Update the totalText
+        document.querySelector("#activities-cost").textContent = "Total: $" + totalPrice;
     }
 });
