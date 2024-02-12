@@ -5,6 +5,10 @@ const otherJobRole = document.querySelector("#other-job-role");
 const designSelect = document.querySelector("#design");
 const colorSelect = document.querySelector("#color");
 const activitiesSection = document.querySelector("#activities");
+const paymentSelect = document.querySelector("#payment");
+const creditCardSection = document.querySelector("#credit-card");
+const paypalSection = document.querySelector("#paypal");
+const bitcoinSection = document.querySelector("#bitcoin");
 
 let totalPrice = 0; // of all registered activities
 
@@ -68,5 +72,30 @@ activitiesSection.addEventListener("change", (e) => {
         totalPrice -= activityCost;
         // Update the totalText
         document.querySelector("#activities-cost").textContent = "Total: $" + totalPrice;
+    }
+});
+
+// Select credit card as default payment method and hide other payment sections
+paymentSelect.value = "credit-card";
+paypalSection.hidden = true;
+bitcoinSection.hidden = true;
+
+// Event listener for paymentSelect
+paymentSelect.addEventListener("change", (e) => {
+    const selectValue = e.target.value;
+
+    // Adjust the form display according to selected payment method
+    if (selectValue === "paypal") {
+        creditCardSection.hidden = true;
+        paypalSection.hidden = false;
+        bitcoinSection.hidden = true;
+    } else if (selectValue === "bitcoin") {
+        creditCardSection.hidden = true;
+        paypalSection.hidden = true;
+        bitcoinSection.hidden = false;
+    } else {
+        creditCardSection.hidden = false;
+        paypalSection.hidden = true;
+        bitcoinSection.hidden = true;
     }
 });
