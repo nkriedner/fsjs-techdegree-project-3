@@ -7,6 +7,8 @@ const colorSelect = document.querySelector("#color");
 
 // When page loads name input has focus:
 nameInput.focus();
+// Disable color select by default:
+colorSelect.disabled = true;
 
 // Hide 'Other Job' input on default:
 otherJobRole.hidden = true;
@@ -19,16 +21,14 @@ jobRoleSelect.addEventListener("change", (e) => {
     if (selectValue === "other") {
         otherJobRole.hidden = false;
         otherJobRole.focus();
+    } else {
+        otherJobRole.hidden = true;
     }
 });
 
-// Disable color select by default:
-colorSelect.disabled = true;
-
-// Event listener for 'Desgin' select:
+// Event listener for 'Design' select:
 designSelect.addEventListener("change", (e) => {
     const selectValue = e.target.value;
-    // console.log(selectValue);
 
     // Enable color select
     colorSelect.disabled = false;
