@@ -9,6 +9,7 @@ const otherJobRole = document.querySelector("#other-job-role");
 const designSelect = document.querySelector("#design");
 const colorSelect = document.querySelector("#color");
 const activitiesSection = document.querySelector("#activities");
+const activitiesCheckboxes = document.querySelectorAll("#activities input");
 const activitiesCost = document.querySelector("#activities-cost");
 const paymentSelect = document.querySelector("#payment");
 const creditCardSection = document.querySelector("#credit-card");
@@ -103,18 +104,17 @@ activitiesSection.addEventListener("change", (e) => {
     activitiesCost.textContent = "Total: $" + totalPrice;
 
     // Loop through activities and disable the time conflicting ones
-    const activitiesInputs = document.querySelectorAll("#activities input");
-    for (let i = 0; i < activitiesInputs.length; i++) {
+    for (let i = 0; i < activitiesCheckboxes.length; i++) {
         // Check if activitiesInput has the same date and time
-        if (e.target.getAttribute("data-day-and-time") === activitiesInputs[i].getAttribute("data-day-and-time")) {
+        if (e.target.getAttribute("data-day-and-time") === activitiesCheckboxes[i].getAttribute("data-day-and-time")) {
             if (e.target.checked) {
-                activitiesInputs[i].disabled = true;
-                activitiesInputs[i].parentElement.classList.add("disabled");
+                activitiesCheckboxes[i].disabled = true;
+                activitiesCheckboxes[i].parentElement.classList.add("disabled");
                 e.target.disabled = false;
                 e.target.parentElement.classList.remove("disabled");
             } else {
-                activitiesInputs[i].disabled = false;
-                activitiesInputs[i].parentElement.classList.remove("disabled");
+                activitiesCheckboxes[i].disabled = false;
+                activitiesCheckboxes[i].parentElement.classList.remove("disabled");
             }
         }
     }
@@ -124,19 +124,19 @@ activitiesSection.addEventListener("change", (e) => {
 paymentSelect.addEventListener("change", (e) => {
     const selectValue = e.target.value;
 
+    function displayPayments(bool1, bool2, bool3) {
+        creditCardSection.hidden = bool1;
+        paypalSection.hidden = bool2;
+        bitcoinSection.hidden = bool3;
+    }
+
     // Adjust the form display according to selected payment method
     if (selectValue === "paypal") {
-        creditCardSection.hidden = true;
-        paypalSection.hidden = false;
-        bitcoinSection.hidden = true;
+        displayPayments(true, false, true);
     } else if (selectValue === "bitcoin") {
-        creditCardSection.hidden = true;
-        paypalSection.hidden = true;
-        bitcoinSection.hidden = false;
+        displayPayments(true, true, false);
     } else {
-        creditCardSection.hidden = false;
-        paypalSection.hidden = true;
-        bitcoinSection.hidden = true;
+        displayPayments(false, true, true);
     }
 });
 
@@ -155,7 +155,6 @@ form.addEventListener("submit", (e) => {
 });
 
 // 'FOCUS' & 'BLUR' events on 'Activities' checbkoxes:
-const activitiesCheckboxes = document.querySelectorAll("#activities input");
 for (let i = 0; i < activitiesCheckboxes.length; i++) {
     activitiesCheckboxes[i].addEventListener("focus", (e) => {
         e.target.parentNode.classList.add("focus");
@@ -167,27 +166,15 @@ for (let i = 0; i < activitiesCheckboxes.length; i++) {
 
 // 'KEYUP' event on 'Name' input (-> real-time error message)
 creditCardInput.addEventListener("keyup", (e) => {
-    // Validate credit card infos:
-    const cardNumberRegex = /^[\d]{13,16}$/;
-    if (!cardNumberRegex.test(creditCardInput.value)) {
-        creditCardInput.parentElement.classList.add("not-valid");
-        creditCardInput.parentElement.classList.remove("valid");
-        // Show the hint:
-        document.querySelector("#cc-hint").style.display = "initial";
+    const ccHint = document.querySelector("#cc-hint");
 
-        // -> Check for different validation problems
-        // --> Check if all are digits
-        const digitRegex = /^[\d]{1,}$/;
-        if (creditCardInput.value === "") {
-            document.querySelector("#cc-hint").textContent = "Credit card number must be between 13 - 16 digits";
-        } else if (!digitRegex.test(creditCardInput.value)) {
-            document.querySelector("#cc-hint").textContent = "All characters must be digits";
-        } else {
-            document.querySelector("#cc-hint").textContent = "You need between 13 - 16 digits";
-        }
+    if (creditCardInput.value === "") {
+        ccHint.textContent = "Credit card number must be between 13 - 16 digits";
+    } else if (!/^[\d]{1,}$/.test(creditCardInput.value)) {
+        ccHint.textContent = "All characters must be digits";
     } else {
-        creditCardInput.parentElement.classList.add("valid");
-        creditCardInput.parentElement.classList.remove("not-valid");
-        document.querySelector("#cc-hint").style.display = "none";
+        ccHint.textContent = "You need between 13 - 16 digits";
     }
+
+    validator(creditCardInput, isCardNumberValid, e);
 });
