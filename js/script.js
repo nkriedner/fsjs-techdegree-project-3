@@ -108,45 +108,103 @@ form.addEventListener("submit", (e) => {
 
     // -> Validate each form field
     // ---> Name validation
-    const nameValue = document.querySelector("#name").value;
+    const nameInput = document.querySelector("#name");
     const nameRegex = /^[^\d ]+$/; // match if string has at least 1 non digit character.
-    if (!nameRegex.test(nameValue)) {
+    if (!nameRegex.test(nameInput.value)) {
         e.preventDefault();
+        nameInput.parentElement.classList.add("not-valid");
+        nameInput.parentElement.classList.remove("valid");
+        // Show the hint:
+        document.querySelector("#name-hint").style.display = "initial";
+    } else {
+        nameInput.parentElement.classList.add("valid");
+        nameInput.parentElement.classList.remove("not-valid");
+        document.querySelector("#name-hint").style.display = "none";
     }
     // ---> Email validation
-    const emailValue = document.querySelector("#email").value;
+    const emailInput = document.querySelector("#email");
     const emailRegex = /^[^@]+@[^@.]+\.[a-z]+$/i;
-    if (!emailRegex.test(emailValue)) {
+    if (!emailRegex.test(emailInput.value)) {
         e.preventDefault();
+        emailInput.parentElement.classList.add("not-valid");
+        emailInput.parentElement.classList.remove("valid");
+        // Show the hint:
+        document.querySelector("#email-hint").style.display = "initial";
+    } else {
+        emailInput.parentElement.classList.add("valid");
+        emailInput.parentElement.classList.remove("not-valid");
+        document.querySelector("#email-hint").style.display = "none";
     }
     // ---> Activities at least 1 selected (totalPrice must be more than 0)
     if (totalPrice === 0) {
+        activitiesSection.classList.add("not-valid");
+        activitiesSection.classList.remove("valid");
+
+        document.querySelector("#activities-hint").style.display = "initial";
         e.preventDefault();
+    } else {
+        activitiesSection.classList.add("valid");
+        activitiesSection.classList.remove("not-valid");
+        document.querySelector("#activities-hint").style.display = "none";
     }
     // ---> Credit card (see info)
+    // If creditcard is selected:
     if (creditCardSection.hidden === false) {
-        console.log("credit card infos needed...");
-
-        // e.preventDefault();
-
         // Validate credit card infos:
         // -> card number
-        const creditCardValue = document.querySelector("#cc-num").value;
+        const creditCardInput = document.querySelector("#cc-num");
         const cardNumberRegex = /^[\d]{13,16}$/;
-        if (!cardNumberRegex.test(creditCardValue)) {
+        if (!cardNumberRegex.test(creditCardInput.value)) {
+            creditCardInput.parentElement.classList.add("not-valid");
+            creditCardInput.parentElement.classList.remove("valid");
+            // Show the hint:
+            document.querySelector("#cc-hint").style.display = "initial";
             e.preventDefault();
+        } else {
+            creditCardInput.parentElement.classList.add("valid");
+            creditCardInput.parentElement.classList.remove("not-valid");
+            document.querySelector("#cc-hint").style.display = "none";
         }
         // -> zip code
-        const zipCodeValue = document.querySelector("#zip").value;
+        const zipCodeInput = document.querySelector("#zip");
         const zipCodeRegex = /^[\d]{5}$/;
-        if (!zipCodeRegex.test(zipCodeValue)) {
+        if (!zipCodeRegex.test(zipCodeInput.value)) {
+            zipCodeInput.parentElement.classList.add("not-valid");
+            zipCodeInput.parentElement.classList.remove("valid");
+            // Show the hint:
+            document.querySelector("#zip-hint").style.display = "initial";
             e.preventDefault();
+        } else {
+            zipCodeInput.parentElement.classList.add("valid");
+            zipCodeInput.parentElement.classList.remove("not-valid");
+            document.querySelector("#zip-hint").style.display = "none";
         }
         // -> cvv code
-        const cvvCodeValue = document.querySelector("#cvv").value;
+        const cvvCodeInput = document.querySelector("#cvv");
         const cvvCodeRegex = /^[\d]{3}$/;
-        if (!cvvCodeRegex.test(cvvCodeValue)) {
+        if (!cvvCodeRegex.test(cvvCodeInput.value)) {
+            cvvCodeInput.parentElement.classList.add("not-valid");
+            cvvCodeInput.parentElement.classList.remove("valid");
+            // Show the hint:
+            document.querySelector("#cvv-hint").style.display = "initial";
             e.preventDefault();
+        } else {
+            cvvCodeInput.parentElement.classList.add("valid");
+            cvvCodeInput.parentElement.classList.remove("not-valid");
+            document.querySelector("#cvv-hint").style.display = "none";
         }
     }
 });
+
+// Event Listener for activities focus & blur
+const activitiesCheckboxes = document.querySelectorAll("#activities input");
+for (let i = 0; i < activitiesCheckboxes.length; i++) {
+    activitiesCheckboxes[i].addEventListener("focus", (e) => {
+        // console.log("focus");
+        // console.log(e.target);
+        e.target.parentNode.classList.add("focus");
+    });
+    activitiesCheckboxes[i].addEventListener("blur", (e) => {
+        e.target.parentNode.classList.remove("focus");
+    });
+}
