@@ -3,15 +3,20 @@
 /*********************/
 const form = document.querySelector("form");
 const nameInput = document.querySelector("#name");
+const emailInput = document.querySelector("#email");
 const jobRoleSelect = document.querySelector("#title");
 const otherJobRole = document.querySelector("#other-job-role");
 const designSelect = document.querySelector("#design");
 const colorSelect = document.querySelector("#color");
 const activitiesSection = document.querySelector("#activities");
+const activitiesCost = document.querySelector("#activities-cost");
 const paymentSelect = document.querySelector("#payment");
 const creditCardSection = document.querySelector("#credit-card");
 const paypalSection = document.querySelector("#paypal");
 const bitcoinSection = document.querySelector("#bitcoin");
+const creditCardInput = document.querySelector("#cc-num");
+const zipCodeInput = document.querySelector("#zip");
+const cvvCodeInput = document.querySelector("#cvv");
 
 /*****************************
  * DEFAULT VALUES & SETTINGS *
@@ -24,16 +29,40 @@ paymentSelect.value = "credit-card"; // pre-selected payment method
 paypalSection.hidden = true;
 bitcoinSection.hidden = true;
 
+/********************
+ * HELPER FUNCTIONS *
+/********************/
+
+// Validation Check functions
+const isValidName = () => /^[^\d ]+$/.test(nameInput.value); // string needs at least 1 non digit
+const isValidEmail = () => /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailInput.value); // checks email format
+const isActivityChosen = () => totalPrice > 0;
+const isCardNumberValid = () => /^[\d]{13,16}$/.test(creditCardInput.value);
+const isValidZipCode = () => /^[\d]{5}$/.test(zipCodeInput.value);
+const isValidCvvCode = () => /^[\d]{3}$/.test(cvvCodeInput.value);
+
+// Meta Validator function
+const validator = (inputElement, validationFunction, formSubmission) => {
+    if (validationFunction()) {
+        inputElement.parentElement.classList.add("valid");
+        inputElement.parentElement.classList.remove("not-valid");
+        inputElement.nextElementSibling.style.display = "none";
+    } else {
+        formSubmission.preventDefault();
+        inputElement.parentElement.classList.add("not-valid");
+        inputElement.parentElement.classList.remove("valid");
+        inputElement.nextElementSibling.style.display = "initial";
+    }
+};
+
 /*******************
  * EVENT LISTENERS *
 /*******************/
 
 // 'CHANGE' event on 'Job Role' select:
 jobRoleSelect.addEventListener("change", (e) => {
-    const selectValue = e.target.value;
-
     // Show hidden 'Other Job' input when 'Other' option is selected:
-    if (selectValue === "other") {
+    if (e.target.value === "other") {
         otherJobRole.hidden = false;
         otherJobRole.focus();
     } else {
@@ -43,23 +72,15 @@ jobRoleSelect.addEventListener("change", (e) => {
 
 // 'CHANGE' event on 'Tshirt Design' select:
 designSelect.addEventListener("change", (e) => {
-    const selectValue = e.target.value;
-
     // Enable color select
     colorSelect.disabled = false;
 
     // Loop through the option elements and hide all options not matching the selecValue
     const colorOptions = document.querySelectorAll("#color option");
-    // console.log(colorOptions);
     for (let i = 0; i < colorOptions.length; i++) {
-        // console.log(colorOptions[i].getAttribute("data-theme"));
-
-        // If the color option is not selected value -> hide it
-        if (colorOptions[i].getAttribute("data-theme") !== selectValue) {
-            // console.log(colorOptions[i].value);
+        if (colorOptions[i].getAttribute("data-theme") !== e.target.value) {
             colorOptions[i].hidden = true;
         } else {
-            // show it:
             colorOptions[i].hidden = false;
             colorSelect.value = colorOptions[i].value; // preselects in every loop -> not ideal solution but temporarily ok
         }
@@ -68,19 +89,18 @@ designSelect.addEventListener("change", (e) => {
 
 // 'CHANGE' event on 'Register for Activities' fieldset:
 activitiesSection.addEventListener("change", (e) => {
-    // Get cost of the target activity
     const activityCost = parseInt(e.target.getAttribute("data-cost"));
-    // If an activity is checked, add its cost to totalPrice
+
+    // If an activity is checked, add its cost to totalPrice + update totalText
     if (e.target.checked) {
         totalPrice += activityCost;
-        // Update the totalText
-        document.querySelector("#activities-cost").textContent = "Total: $" + totalPrice;
     } else {
         // if it is not checked, subtract its cost from totalPrice
         totalPrice -= activityCost;
-        // Update the totalText
-        document.querySelector("#activities-cost").textContent = "Total: $" + totalPrice;
     }
+
+    // Update totalText (text for toal price)
+    activitiesCost.textContent = "Total: $" + totalPrice;
 
     // Loop through activities and disable the time conflicting ones
     const activitiesInputs = document.querySelectorAll("#activities input");
@@ -122,96 +142,15 @@ paymentSelect.addEventListener("change", (e) => {
 
 // 'SUBMIT' event on 'Form':
 form.addEventListener("submit", (e) => {
-    // e.preventDefault();
-    console.log("submission running...");
-
-    // -> Validate each form field
-    // ---> Name validation
-    const nameInput = document.querySelector("#name");
-    const nameRegex = /^[^\d ]+$/; // match if string has at least 1 non digit character.
-    if (!nameRegex.test(nameInput.value)) {
-        e.preventDefault();
-        nameInput.parentElement.classList.add("not-valid");
-        nameInput.parentElement.classList.remove("valid");
-        // Show the hint:
-        document.querySelector("#name-hint").style.display = "initial";
-    } else {
-        nameInput.parentElement.classList.add("valid");
-        nameInput.parentElement.classList.remove("not-valid");
-        document.querySelector("#name-hint").style.display = "none";
-    }
-    // ---> Email validation
-    const emailInput = document.querySelector("#email");
-    const emailRegex = /^[^@]+@[^@.]+\.[a-z]+$/i;
-    if (!emailRegex.test(emailInput.value)) {
-        e.preventDefault();
-        emailInput.parentElement.classList.add("not-valid");
-        emailInput.parentElement.classList.remove("valid");
-        // Show the hint:
-        document.querySelector("#email-hint").style.display = "initial";
-    } else {
-        emailInput.parentElement.classList.add("valid");
-        emailInput.parentElement.classList.remove("not-valid");
-        document.querySelector("#email-hint").style.display = "none";
-    }
-    // ---> Activities at least 1 selected (totalPrice must be more than 0)
-    if (totalPrice === 0) {
-        activitiesSection.classList.add("not-valid");
-        activitiesSection.classList.remove("valid");
-
-        document.querySelector("#activities-hint").style.display = "initial";
-        e.preventDefault();
-    } else {
-        activitiesSection.classList.add("valid");
-        activitiesSection.classList.remove("not-valid");
-        document.querySelector("#activities-hint").style.display = "none";
-    }
-    // ---> Credit card (see info)
-    // If creditcard is selected:
+    // Call the validation check functions
+    validator(nameInput, isValidName, e);
+    validator(emailInput, isValidEmail, e);
+    validator(activitiesCost, isActivityChosen, e);
+    // Only if creditcard is selected:
     if (creditCardSection.hidden === false) {
-        // Validate credit card infos:
-        // -> card number
-        const creditCardInput = document.querySelector("#cc-num");
-        const cardNumberRegex = /^[\d]{13,16}$/;
-        if (!cardNumberRegex.test(creditCardInput.value)) {
-            creditCardInput.parentElement.classList.add("not-valid");
-            creditCardInput.parentElement.classList.remove("valid");
-            // Show the hint:
-            document.querySelector("#cc-hint").style.display = "initial";
-            e.preventDefault();
-        } else {
-            creditCardInput.parentElement.classList.add("valid");
-            creditCardInput.parentElement.classList.remove("not-valid");
-            document.querySelector("#cc-hint").style.display = "none";
-        }
-        // -> zip code
-        const zipCodeInput = document.querySelector("#zip");
-        const zipCodeRegex = /^[\d]{5}$/;
-        if (!zipCodeRegex.test(zipCodeInput.value)) {
-            zipCodeInput.parentElement.classList.add("not-valid");
-            zipCodeInput.parentElement.classList.remove("valid");
-            // Show the hint:
-            document.querySelector("#zip-hint").style.display = "initial";
-            e.preventDefault();
-        } else {
-            zipCodeInput.parentElement.classList.add("valid");
-            zipCodeInput.parentElement.classList.remove("not-valid");
-            document.querySelector("#zip-hint").style.display = "none";
-        }
-        // -> cvv code
-        const cvvCodeInput = document.querySelector("#cvv");
-        const cvvCodeRegex = /^[\d]{3}$/;
-        if (!cvvCodeRegex.test(cvvCodeInput.value)) {
-            cvvCodeInput.parentElement.classList.add("not-valid");
-            cvvCodeInput.parentElement.classList.remove("valid");
-            // Show the hint:
-            document.querySelector("#cvv-hint").style.display = "initial";
-            e.preventDefault();
-        } else {
-            cvvCodeInput.parentElement.classList.add("valid");
-            cvvCodeInput.parentElement.classList.remove("not-valid");
-            document.querySelector("#cvv-hint").style.display = "none";
-        }
+        validator(creditCardInput, isCardNumberValid, e);
+        validator(zipCodeInput, isValidZipCode, e);
+        validator(cvvCodeInput, isValidCvvCode, e);
     }
 });
 
@@ -227,7 +166,6 @@ for (let i = 0; i < activitiesCheckboxes.length; i++) {
 }
 
 // 'KEYUP' event on 'Name' input (-> real-time error message)
-const creditCardInput = document.querySelector("#cc-num");
 creditCardInput.addEventListener("keyup", (e) => {
     // Validate credit card infos:
     const cardNumberRegex = /^[\d]{13,16}$/;
