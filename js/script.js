@@ -86,7 +86,6 @@ activitiesSection.addEventListener("change", (e) => {
     const activitiesInputs = document.querySelectorAll("#activities input");
     for (let i = 0; i < activitiesInputs.length; i++) {
         // Check if activitiesInput has the same date and time
-        console.log(e.target.checked);
         if (e.target.getAttribute("data-day-and-time") === activitiesInputs[i].getAttribute("data-day-and-time")) {
             if (e.target.checked) {
                 activitiesInputs[i].disabled = true;
