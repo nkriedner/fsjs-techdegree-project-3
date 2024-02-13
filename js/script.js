@@ -74,6 +74,24 @@ activitiesSection.addEventListener("change", (e) => {
         // Update the totalText
         document.querySelector("#activities-cost").textContent = "Total: $" + totalPrice;
     }
+
+    // Loop through activities and disable the time conflicting ones
+    const activitiesInputs = document.querySelectorAll("#activities input");
+    for (let i = 0; i < activitiesInputs.length; i++) {
+        // Check if activitiesInput has the same date and time
+        console.log(e.target.checked);
+        if (e.target.getAttribute("data-day-and-time") === activitiesInputs[i].getAttribute("data-day-and-time")) {
+            if (e.target.checked) {
+                activitiesInputs[i].disabled = true;
+                activitiesInputs[i].parentElement.classList.add("disabled");
+                e.target.disabled = false;
+                e.target.parentElement.classList.remove("disabled");
+            } else {
+                activitiesInputs[i].disabled = false;
+                activitiesInputs[i].parentElement.classList.remove("disabled");
+            }
+        }
+    }
 });
 
 // Select credit card as default payment method and hide other payment sections
