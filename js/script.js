@@ -1,4 +1,6 @@
-// Element Selectors:
+/*********************
+ * ELEMENT SELECTORS *
+/*********************/
 const form = document.querySelector("form");
 const nameInput = document.querySelector("#name");
 const jobRoleSelect = document.querySelector("#title");
@@ -11,17 +13,22 @@ const creditCardSection = document.querySelector("#credit-card");
 const paypalSection = document.querySelector("#paypal");
 const bitcoinSection = document.querySelector("#bitcoin");
 
-let totalPrice = 0; // of all registered activities
-
-// When page loads name input has focus:
+/*****************************
+ * DEFAULT VALUES & SETTINGS *
+/*****************************/
 nameInput.focus();
-// Disable color select by default:
-colorSelect.disabled = true;
-
-// Hide 'Other Job' input on default:
 otherJobRole.hidden = true;
+colorSelect.disabled = true;
+let totalPrice = 0; // price of all registered activities
+paymentSelect.value = "credit-card"; // pre-selected payment method
+paypalSection.hidden = true;
+bitcoinSection.hidden = true;
 
-// Event listener for 'Job Role' input:
+/*******************
+ * EVENT LISTENERS *
+/*******************/
+
+// 'CHANGE' event on 'Job Role' select:
 jobRoleSelect.addEventListener("change", (e) => {
     const selectValue = e.target.value;
 
@@ -34,7 +41,7 @@ jobRoleSelect.addEventListener("change", (e) => {
     }
 });
 
-// Event listener for 'Design' select:
+// 'CHANGE' event on 'Tshirt Design' select:
 designSelect.addEventListener("change", (e) => {
     const selectValue = e.target.value;
 
@@ -59,7 +66,7 @@ designSelect.addEventListener("change", (e) => {
     }
 });
 
-// Event listener for 'Register for Activities'
+// 'CHANGE' event on 'Register for Activities' fieldset:
 activitiesSection.addEventListener("change", (e) => {
     // Get cost of the target activity
     const activityCost = parseInt(e.target.getAttribute("data-cost"));
@@ -94,12 +101,7 @@ activitiesSection.addEventListener("change", (e) => {
     }
 });
 
-// Select credit card as default payment method and hide other payment sections
-paymentSelect.value = "credit-card";
-paypalSection.hidden = true;
-bitcoinSection.hidden = true;
-
-// Event listener for paymentSelect
+// 'CHANGE' event on 'Payment Info' select:
 paymentSelect.addEventListener("change", (e) => {
     const selectValue = e.target.value;
 
@@ -119,7 +121,7 @@ paymentSelect.addEventListener("change", (e) => {
     }
 });
 
-// Event listener for form submissions
+// 'SUBMIT' event on 'Form':
 form.addEventListener("submit", (e) => {
     // e.preventDefault();
     console.log("submission running...");
@@ -214,15 +216,41 @@ form.addEventListener("submit", (e) => {
     }
 });
 
-// Event Listener for activities focus & blur
+// 'FOCUS' & 'BLUR' events on 'Activities' checbkoxes:
 const activitiesCheckboxes = document.querySelectorAll("#activities input");
 for (let i = 0; i < activitiesCheckboxes.length; i++) {
     activitiesCheckboxes[i].addEventListener("focus", (e) => {
-        // console.log("focus");
-        // console.log(e.target);
         e.target.parentNode.classList.add("focus");
     });
     activitiesCheckboxes[i].addEventListener("blur", (e) => {
         e.target.parentNode.classList.remove("focus");
     });
 }
+
+// 'KEYUP' event on 'Name' input (-> real-time error message)
+const creditCardInput = document.querySelector("#cc-num");
+creditCardInput.addEventListener("keyup", (e) => {
+    // Validate credit card infos:
+    const cardNumberRegex = /^[\d]{13,16}$/;
+    if (!cardNumberRegex.test(creditCardInput.value)) {
+        creditCardInput.parentElement.classList.add("not-valid");
+        creditCardInput.parentElement.classList.remove("valid");
+        // Show the hint:
+        document.querySelector("#cc-hint").style.display = "initial";
+
+        // -> Check for different validation problems
+        // --> Check if all are digits
+        const digitRegex = /^[\d]{1,}$/;
+        if (creditCardInput.value === "") {
+            document.querySelector("#cc-hint").textContent = "Credit card number must be between 13 - 16 digits";
+        } else if (!digitRegex.test(creditCardInput.value)) {
+            document.querySelector("#cc-hint").textContent = "All characters must be digits";
+        } else {
+            document.querySelector("#cc-hint").textContent = "You need between 13 - 16 digits";
+        }
+    } else {
+        creditCardInput.parentElement.classList.add("valid");
+        creditCardInput.parentElement.classList.remove("not-valid");
+        document.querySelector("#cc-hint").style.display = "none";
+    }
+});
